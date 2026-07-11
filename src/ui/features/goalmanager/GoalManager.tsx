@@ -11,9 +11,44 @@ import { selectGoalsMap, updateGoal as updateGoalRedux } from '../../../store/go
 import { useAppDispatch, useAppSelector } from '../../../store/hooks'
 import DatePicker from '../../components/DatePicker'
 import { Theme } from '../../components/Theme'
+import { BaseEmoji } from 'emoji-mart'
+import EmojiPicker from '../../components/EmojiPicker'
 
 type Props = { goal: Goal }
+type EmojiPickerContainerProps = { isOpen: boolean; hasIcon: boolean }
+
+const EmojiPickerContainer = styled.div<EmojiPickerContainerProps>`
+  display: ${(props) => (props.isOpen ? 'flex' : 'none')};
+  position: absolute;
+  top: ${(props) => (props.hasIcon ? '10rem' : '2rem')};
+  left: 0;
+`
+
 export function GoalManager(props: Props) {
+  const [emojiPickerIsOpen, setEmojiPickerIsOpen] = useState(false)
+  const [icon, setIcon] = useState<string | null>(null)
+
+  const hasIcon = () => icon != null
+
+const pickEmojiOnClick = (emoji: BaseEmoji, event: React.MouseEvent) => {
+  event.stopPropagation()
+
+  setIcon(emoji.native)
+  setEmojiPickerIsOpen(false)
+
+  const updatedGoal: Goal = {
+    ...props.goal,
+    icon: emoji.native ?? props.goal.icon,
+    name: name ?? props.goal.name,
+    targetDate: targetDate ?? props.goal.targetDate,
+    targetAmount: targetAmount ?? props.goal.targetAmount,
+  }
+
+  dispatch(updateGoalRedux(updatedGoal))
+
+  // TODO(TASK-3) Update database
+}
+
   const dispatch = useAppDispatch()
 
   const goal = useAppSelector(selectGoalsMap)[props.goal.id]
@@ -36,6 +71,12 @@ export function GoalManager(props: Props) {
   useEffect(() => {
     setName(goal.name)
   }, [goal.name])
+
+  useEffect(()=> {
+    setIcon(props.goal.icon)
+  },[props.goal.id,
+    props.goal.icon
+  ])
 
   const updateNameOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const nextName = event.target.value
@@ -106,6 +147,14 @@ export function GoalManager(props: Props) {
           <StringValue>{new Date(props.goal.created).toLocaleDateString()}</StringValue>
         </Value>
       </Group>
+
+       <EmojiPickerContainer
+      isOpen={emojiPickerIsOpen}
+      hasIcon={hasIcon()}
+      onClick={(event) => event.stopPropagation()}
+    >
+      <EmojiPicker onClick={pickEmojiOnClick} />
+    </EmojiPickerContainer>
     </GoalManagerContainer>
   )
 }
@@ -113,7 +162,7 @@ export function GoalManager(props: Props) {
 type FieldProps = { name: string; icon: IconDefinition }
 type AddIconButtonContainerProps = { shouldShow: boolean }
 type GoalIconContainerProps = { shouldShow: boolean }
-type EmojiPickerContainerProps = { isOpen: boolean; hasIcon: boolean }
+
 
 const Field = (props: FieldProps) => (
   <FieldContainer>
