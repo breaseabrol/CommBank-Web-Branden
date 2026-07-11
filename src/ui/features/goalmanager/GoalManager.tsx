@@ -1,5 +1,5 @@
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons'
-import { faDollarSign, IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { faDollarSign,faSmile, IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date'
 import 'date-fns'
@@ -13,9 +13,24 @@ import DatePicker from '../../components/DatePicker'
 import { Theme } from '../../components/Theme'
 import { BaseEmoji } from 'emoji-mart'
 import EmojiPicker from '../../components/EmojiPicker'
+import { TransparentButton } from '../../components/TransparentButton'
+
 
 type Props = { goal: Goal }
 type EmojiPickerContainerProps = { isOpen: boolean; hasIcon: boolean }
+type GoalIconContainerProps = { shouldShow: boolean }
+
+const AddIconButtonContainer = styled.div<AddIconButtonContainerProps>`
+  display: ${(props) => (props.hasIcon ? 'none' : 'flex')};
+`
+
+const AddIconButtonText = styled.span`
+  margin-left: 0.5rem;
+`
+
+const GoalIconContainer = styled.div<GoalIconContainerProps>`
+  display: ${(props) => (props.shouldShow ? 'flex' : 'none')};
+`
 
 const EmojiPickerContainer = styled.div<EmojiPickerContainerProps>`
   display: ${(props) => (props.isOpen ? 'flex' : 'none')};
@@ -48,6 +63,11 @@ const pickEmojiOnClick = (emoji: BaseEmoji, event: React.MouseEvent) => {
 
   // TODO(TASK-3) Update database
 }
+
+const addIconOnClick = (event: React.MouseEvent) => {
+    event.stopPropagation()
+    setEmojiPickerIsOpen(true)
+  }
 
   const dispatch = useAppDispatch()
 
@@ -155,13 +175,20 @@ const pickEmojiOnClick = (emoji: BaseEmoji, event: React.MouseEvent) => {
     >
       <EmojiPicker onClick={pickEmojiOnClick} />
     </EmojiPickerContainer>
+
+     <AddIconButtonContainer hasIcon={hasIcon()}>
+      <TransparentButton onClick={addIconOnClick}>
+        <FontAwesomeIcon icon={faSmile} size="2x" />
+        <AddIconButtonText>Add icon</AddIconButtonText>
+      </TransparentButton>
+    </AddIconButtonContainer>
+
     </GoalManagerContainer>
   )
 }
 
 type FieldProps = { name: string; icon: IconDefinition }
-type AddIconButtonContainerProps = { shouldShow: boolean }
-type GoalIconContainerProps = { shouldShow: boolean }
+type AddIconButtonContainerProps = { hasIcon: boolean }
 
 
 const Field = (props: FieldProps) => (
