@@ -61,7 +61,7 @@ const pickEmojiOnClick = (emoji: BaseEmoji, event: React.MouseEvent) => {
 
   dispatch(updateGoalRedux(updatedGoal))
 
-  // TODO(TASK-3) Update database
+  updateGoalApi(props.goal.id, updatedGoal)
 }
 
 const addIconOnClick = (event: React.MouseEvent) => {
