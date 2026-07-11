@@ -12,7 +12,7 @@ import { Card } from '../../../components/Card'
 type Props = { id: string }
 
 const Icon = styled.h1`
-  font-size = 5.5rem;
+  font-size: 5.5rem;
 `
 
 export default function GoalCard(props: Props) {
